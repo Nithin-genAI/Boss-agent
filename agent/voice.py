@@ -1,4 +1,4 @@
-# agent/voice.py — Deepgram STT and TTS
+# agent/voice.py —
 import os
 import time
 import requests
