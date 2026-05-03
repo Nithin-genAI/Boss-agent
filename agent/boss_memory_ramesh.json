@@ -1,0 +1,51 @@
+{
+  "preferences": {
+    "user_name": "nithin ",
+    "favorite_language": "Python"
+  },
+  "entries": [
+    {
+      "type": "fact",
+      "content": "User's name is ramesh",
+      "category": "identity",
+      "timestamp": "2026-05-02T20:21:02.560628"
+    },
+    {
+      "type": "fact",
+      "content": "User likes italian food",
+      "category": "preference",
+      "timestamp": "2026-05-02T20:21:10.865688"
+    },
+    {
+      "type": "fact",
+      "content": "Ramesh is a computer science student",
+      "category": "identity",
+      "timestamp": "2026-05-02T20:31:29.883833"
+    },
+    {
+      "type": "fact",
+      "content": "Ramesh is a computer science student who likes building AI agents",
+      "category": "identity",
+      "timestamp": "2026-05-02T20:35:18.170891"
+    },
+    {
+      "type": "fact",
+      "content": "Ramesh is building a multi-agent Boss system",
+      "category": "project",
+      "timestamp": "2026-05-02T20:36:40.891229"
+    },
+    {
+      "type": "fact",
+      "content": "User's name is nithin ",
+      "category": "identity",
+      "timestamp": "2026-05-02T20:39:16.549919"
+    },
+    {
+      "type": "task_history",
+      "task_type": "book_restaurant",
+      "goal": "{\"restaurant\": \"Oleana\", \"time\": \"7pm\", \"people\": 2}",
+      "outcome": "success",
+      "timestamp": "2026-05-03T00:15:04.484873"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "preferences": {
+    "user_name": "ramesh"
+  },
+  "entries": [
+    {
+      "type": "fact",
+      "content": "User's name is ramesh",
+      "category": "identity",
+      "timestamp": "2026-05-02T20:58:37.630425"
+    },
+    {
+      "type": "task_history",
+      "task_type": "book_restaurant",
+      "goal": "{\"restaurant\": \"Oleana\", \"time\": \"make it 8pm\", \"people\": 2}",
+      "outcome": "success",
+      "timestamp": "2026-05-02T23:56:21.590991"
+    }
+  ]
+}
