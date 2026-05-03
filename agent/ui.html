@@ -7,15 +7,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f4f6f8;
-            --surface: #ffffff;
+            --bg: #e6eef5;
+            --surface: #e6eef5;
             --primary: #4f46e5;
             --primary-hover: #4338ca;
-            --text-main: #1f2937;
-            --text-light: #6b7280;
-            --bot-bubble: #e0e7ff;
-            --user-bubble: #ffffff;
-            --border: #e5e7eb;
+            --text-main: #2d3748;
+            --text-light: #718096;
+            
+            /* Claymorphism 3D Shadows */
+            --clay-outer: 12px 12px 24px #c3cad5, -12px -12px 24px #ffffff;
+            --clay-inner: inset 6px 6px 12px #c3cad5, inset -6px -6px 12px #ffffff;
+            --clay-bubble-bot: 6px 6px 12px #c3cad5, -6px -6px 12px #ffffff;
+            --clay-bubble-user: inset 4px 4px 8px #c3cad5, inset -4px -4px 8px #ffffff;
         }
 
         body {
@@ -34,171 +37,191 @@
             max-width: 800px;
             height: 90vh;
             background: var(--surface);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-radius: 40px;
+            box-shadow: var(--clay-outer);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid var(--border);
+            position: relative;
         }
 
         .header {
-            padding: 20px;
+            padding: 25px;
             text-align: center;
-            border-bottom: 1px solid var(--border);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: var(--surface);
+            border-radius: 40px 40px 0 0;
+            box-shadow: 0 10px 15px -10px rgba(0,0,0,0.05);
+            z-index: 10;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: var(--primary);
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
         .header p {
             margin: 5px 0 0;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-light);
+            font-weight: 600;
         }
 
         .messages {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            animation: fadeIn 0.3s ease;
+            max-width: 75%;
+            padding: 16px 20px;
+            border-radius: 20px;
+            line-height: 1.6;
+            font-size: 1rem;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(15px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .message.bot {
             align-self: flex-start;
-            background: var(--bot-bubble);
+            background: var(--surface);
             color: var(--text-main);
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 5px;
+            box-shadow: var(--clay-bubble-bot);
         }
 
         .message.user {
             align-self: flex-end;
-            background: var(--user-bubble);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: var(--surface);
+            color: var(--primary);
+            border-bottom-right-radius: 5px;
+            box-shadow: var(--clay-bubble-user);
         }
 
         .message.system {
             align-self: center;
             background: transparent;
             color: var(--text-light);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-style: italic;
+            box-shadow: none;
         }
 
         .input-area {
-            padding: 20px;
+            padding: 25px;
             background: var(--surface);
-            border-top: 1px solid var(--border);
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
+            border-radius: 0 0 40px 40px;
+            box-shadow: 0 -10px 15px -10px rgba(0,0,0,0.05);
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 12px 20px;
-            border: 1px solid var(--border);
-            border-radius: 25px;
-            font-size: 1rem;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.05rem;
             outline: none;
-            transition: all 0.2s;
-            background: #f9fafb;
+            background: var(--surface);
+            box-shadow: var(--clay-inner);
+            color: var(--text-main);
+            font-weight: 500;
+            transition: all 0.3s;
         }
 
         input[type="text"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-            background: #fff;
+            box-shadow: inset 8px 8px 16px #c3cad5, inset -8px -8px 16px #ffffff, 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
 
         button {
-            background: var(--primary);
-            color: white;
+            background: var(--surface);
             border: none;
-            width: 45px;
-            height: 45px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--clay-bubble-bot);
+        }
+
+        button svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--primary);
+            transition: transform 0.2s;
         }
 
         button:hover {
-            background: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: 8px 8px 16px #c3cad5, -8px -8px 16px #ffffff;
+        }
+        
+        button:hover svg {
+            transform: scale(1.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: var(--clay-inner);
         }
 
         button:disabled {
-            background: #ccc;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
+            box-shadow: var(--clay-inner);
         }
 
-        .mic-btn {
-            background: #ef4444;
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
-        }
-
-        .mic-btn:hover {
-            background: #dc2626;
+        .mic-btn svg {
+            fill: #ef4444;
         }
 
         .mic-btn.recording {
             animation: pulse 1.5s infinite;
+            box-shadow: inset 6px 6px 12px #c3cad5, inset -6px -6px 12px #ffffff;
+        }
+        
+        .mic-btn.recording svg {
+            animation: bounce 1s infinite alternate;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        /* SVG Icons */
-        svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
         
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+
         .loading-dots:after {
             content: '.';
             animation: dots 1.5s steps(5, end) infinite;
         }
         @keyframes dots {
             0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            40% { color: var(--text-main); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
-            60% { text-shadow: .25em 0 0 var(--text-main), .5em 0 0 rgba(0,0,0,0); }
-            80%, 100% { text-shadow: .25em 0 0 var(--text-main), .5em 0 0 var(--text-main); }
+            40% { color: var(--primary); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            60% { text-shadow: .25em 0 0 var(--primary), .5em 0 0 rgba(0,0,0,0); }
+            80%, 100% { text-shadow: .25em 0 0 var(--primary), .5em 0 0 var(--primary); }
         }
     </style>
 </head>

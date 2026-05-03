@@ -212,14 +212,39 @@ end tell
 
 
 @tool
-def create_reminder(task: str, time: str) -> str:
+def create_reminder(task: str, time_str: str) -> str:
     """
-    Create a reminder (demo mode).
+    Create a reminder/calendar event by opening a native ICS file.
     Args:
-        task: What to remind about
-        time: When (e.g., "tomorrow 9am", "in 30 minutes")
+        task: What to remind about (e.g. "happy day")
+        time_str: Date and time in YYYYMMDDTHHMMSS format (e.g. "20260504T100000"). If time is unknown, provide the date like "20260504T090000".
     """
-    return f"⏰ Reminder set: '{task}' at {time}\n(Production: Apple Reminders / Google Calendar API)"
+    import os
+    import subprocess
+    
+    # Clean the time string
+    time_str = time_str.replace("-", "").replace(":", "")
+    if "T" not in time_str:
+        time_str += "T090000"  # Default to 9 AM
+        
+    ics_content = f"""BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:{task}
+DTSTART:{time_str}
+DTEND:{time_str}
+END:VEVENT
+END:VCALENDAR
+"""
+    file_path = f"/tmp/reminder_{task.replace(' ', '_')}.ics"
+    with open(file_path, "w") as f:
+        f.write(ics_content)
+        
+    try:
+        subprocess.run(["open", file_path])
+        return f"📅 Opened calendar to set reminder: '{task}' for {time_str}. Please click 'Add' to confirm."
+    except Exception as e:
+        return f"❌ Failed to open calendar: {str(e)}"
 
 
 @tool
