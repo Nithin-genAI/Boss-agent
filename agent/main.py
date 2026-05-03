@@ -7,10 +7,10 @@ from tools.system_tools import (
     run_shell_command, find_file, search_file_content, summarize_directory
 )
 from tools.visual_tools import take_screenshot, open_application, open_folder
-from tools.web_tools import (
-    navigate_to_url, search_google, click_on_page,
-    type_on_page, press_key, read_page_text,
-    take_browser_screenshot, close_browser, get_current_url
+from tools.selenium_tools import (
+    browser_go, browser_search, browser_click,
+    browser_type, browser_press, browser_read,
+    browser_screenshot, browser_close, browser_get_url
 )
 from tools.api_tools import (
     get_weather, get_news, get_crypto_price, translate_text,
@@ -33,9 +33,9 @@ def interactive_mode():
         search_file_content, read_file, list_directory,
         summarize_directory, run_shell_command,
         take_screenshot, open_application, open_folder,
-        navigate_to_url, search_google, click_on_page,
-        type_on_page, press_key, read_page_text,
-        take_browser_screenshot, close_browser, get_current_url,
+        browser_go, browser_search, browser_click,
+        browser_type, browser_press, browser_read,
+        browser_screenshot, browser_close, browser_get_url,
         get_weather, get_news, get_crypto_price, translate_text,
         get_joke, send_email, create_reminder, book_flight,
         analyze_image

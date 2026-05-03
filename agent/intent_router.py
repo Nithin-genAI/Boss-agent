@@ -10,7 +10,7 @@ class IntentRouter:
     
     # ─── Pattern Lists ─────────────────────────────────────
     
-    CANCEL_WORDS = ["cancel", "stop", "never mind", "forget it", "abort", "end this", "quit"]
+    CANCEL_WORDS = ["cancel", "stop it", "never mind", "forget it", "abort", "end this", "cancel it", "stop this", "escape", "reset task", "exit task"]
     UNDO_WORDS = ["undo", "take back", "reverse that", "go back"]
     STATUS_WORDS = ["status", "what were we doing", "where are we", "what's the status", "what was i doing"]
     
@@ -18,10 +18,13 @@ class IntentRouter:
                       "rm ", "sudo ", "cat ", "ls ", "mkdir ", "touch ", "python ", "pip ",
                       "cd ", "pwd", "echo ", "grep ", "find ", "chmod ", "chown "]
     
-    WEB_TRIGGERS = ["youtube", "google.com", "github.com", "http://", "https://",
-                    "open youtube", "search youtube", "go to ", "navigate to ", "browse ",
-                    "in chrome", "in safari", "open website", "visit ", "play video",
-                    "watch ", "search google", "look up "]
+    WEB_TRIGGERS = [
+        "youtube", "google", "github", "http", "open youtube",
+        "search youtube", "go to", "navigate", "browse",
+        "in chrome", "in browser", "in safari", "open website", "visit",
+        "play video", "watch", "new tab", "switch tab", "screenshot page",
+        ".com", ".org", ".net", ".in", ".io"
+    ]
     
     CHAT_GREETINGS = ["hey", "hi", "hello", "yo", "sup", "hola", "howdy", "greetings",
                       "ok", "okay", "sure", "thanks", "thank you", "bye", "goodbye"]
@@ -40,12 +43,20 @@ class IntentRouter:
                            "instead", "not ", "i meant", "let's make it", "correction:"]
     
     TASK_PATTERNS = {
-        "book_restaurant": ["book", "table", "restaurant", "reserve", "reservation", "dinner at", "lunch at"],
+        # Must use multi-word phrases to avoid catching "book train", "book ticket", etc.
+        "book_restaurant": ["book a table", "book a restaurant", "book restaurant", "reserve a table",
+                            "reservation at", "dinner reservation", "lunch reservation"],
         "check_order": ["check order", "track order", "order status", "where is my order", "package tracking"],
-        "plan_trip": ["plan trip", "plan a trip", "travel to", "vacation", "hotel", "flight", "book a hotel"],
-        "file_complaint": ["complaint", "support ticket", "file a complaint", "issue with", "problem with"],
-        "open_and_summarize": ["open folder", "read file", "summarize directory", "show me files", "list files in"],
+        "plan_trip": ["plan trip", "plan a trip", "vacation", "book a hotel"],
+        "file_complaint": ["file a complaint", "support ticket", "complaint about"],
+        "open_and_summarize": ["open folder", "summarize directory", "show me files", "list files in"],
     }
+
+    # These patterns BLOCK new task detection — they belong to GENERAL_CHAT
+    TASK_BLOCK_PATTERNS = [
+        "book train", "book ticket", "train ticket", "irctc", "book flight",
+        "open ", "search for", "find ", "go to", "navigate to"
+    ]
     
     # ─── Main Classify Method ──────────────────────────────
     
@@ -59,14 +70,14 @@ class IntentRouter:
         if not msg_lower or len(msg_lower) < 1:
             return {"intent": "GENERAL_CHAT", "confidence": 1.0, "raw": message}
         
-        # ─── 1. EXACT MATCH SHORTCUTS (fast path) ───
-        if msg_lower in self.CANCEL_WORDS:
+        # ─── 1. CANCEL / UNDO / STATUS (ALWAYS first — must be able to escape any task) ───
+        if any(msg_lower == w or w in msg_lower for w in self.CANCEL_WORDS):
             return {"intent": "CANCEL", "confidence": 1.0, "raw": message}
         
-        if msg_lower in self.UNDO_WORDS:
+        if any(msg_lower == w or msg_lower.startswith(w) for w in self.UNDO_WORDS):
             return {"intent": "UNDO", "confidence": 1.0, "raw": message}
         
-        if any(msg_lower == w or msg_lower.startswith(w + " ") for w in self.STATUS_WORDS):
+        if any(msg_lower == w or msg_lower.startswith(w) for w in self.STATUS_WORDS):
             return {"intent": "STATUS_CHECK", "confidence": 1.0, "raw": message}
         
         # ─── 2. SHELL COMMANDS (highest priority — dangerous) ───
@@ -75,7 +86,7 @@ class IntentRouter:
                 return {"intent": "SHELL_COMMAND", "confidence": 0.98, "raw": message}
         
         # ─── 2.5 COMPLEX ANALYSIS (requires LLM) ───
-        complex_triggers = ["screenshot", "summarize", "analyze", "analyse", "what is there", "what is on", "tell me what", "photo", "picture"]
+        complex_triggers = ["screenshot", "summarize", "analyze", "analyse", "what is there", "what is on", "tell me what", "photo", "picture", "youtube", "chrome", "subscriptions", "gmail"]
         if any(c in msg_lower for c in complex_triggers):
             return {"intent": "GENERAL_CHAT", "confidence": 0.96, "raw": message}
             
@@ -128,9 +139,12 @@ class IntentRouter:
                 return {"intent": "CLARIFICATION", "confidence": 0.7, "raw": message}
         
         # ─── 8. NEW TASKS ───
-        for task_type, keywords in self.TASK_PATTERNS.items():
-            if any(k in msg_lower for k in keywords):
-                return {"intent": "NEW_TASK", "confidence": 0.85, "task_type": task_type, "raw": message}
+        # First check if this is blocked (e.g., "book train" should NOT trigger book_restaurant)
+        is_blocked = any(b in msg_lower for b in self.TASK_BLOCK_PATTERNS)
+        if not is_blocked:
+            for task_type, keywords in self.TASK_PATTERNS.items():
+                if any(k in msg_lower for k in keywords):
+                    return {"intent": "NEW_TASK", "confidence": 0.85, "task_type": task_type, "raw": message}
         
         # ─── 9. FALLBACK ───
         return {"intent": "GENERAL_CHAT", "confidence": 0.6, "raw": message}

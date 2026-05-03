@@ -168,6 +168,13 @@ class BossKernel:
     def _handle_web(self, message: str) -> str:
         """Route web requests through BrowserAgent."""
         if self.orchestrator:
+            # Check for direct flow overrides first
+            msg_lower = message.lower()
+            if "youtube" in msg_lower or "play" in msg_lower:
+                return self._youtube_flow(message)
+            if "google" in msg_lower or "search" in msg_lower:
+                return self._google_flow(message)
+                
             result = self.orchestrator.browser.execute(message)
             if result.get("success"):
                 action = result.get("action", "")
@@ -182,10 +189,48 @@ class BossKernel:
                     url = result.get('url', '')
                     if snippet:
                         return f"Opened {url}.\n\n{snippet}"
-                    return f"Opened {url} in Safari."
+                    return f"Opened {url} in Chrome."
                 return snippet or "Done."
             return f"Browser error: {result.get('error', 'Unknown')}"
         return "Browser not available."
+
+    def _youtube_flow(self, message: str) -> str:
+        import re
+        query = "music"
+        m = re.search(r'(?:for|search|play|watch)\s+(?:youtube\s+)?(?:for\s+)?["\']?(.+?)["\']?(?:\s+and\s+play|\s+on\s+youtube|\s*$)', message.lower())
+        if m:
+            query = m.group(1).strip()
+            query = re.sub(r'^for\s+', '', query)
+        
+        # Use Selenium tools directly
+        self.registry.execute("browser_go", {"url": "https://www.youtube.com"})
+        import time
+        time.sleep(3)
+        
+        self.registry.execute("browser_type", {"selector": "search_query", "text": query})
+        time.sleep(0.5)
+        
+        self.registry.execute("browser_press", {"key": "Enter"})
+        time.sleep(4)
+        
+        # Try click first video
+        self.registry.execute("browser_click", {"text": query.title()})
+        time.sleep(2)
+        
+        url = self.registry.execute("browser_get_url", {})
+        
+        if "/watch" in str(url):
+            return f"Playing '{query}' on YouTube: {url}"
+        return f"Searched YouTube for '{query}'. Results shown. Click a video to play."
+
+
+    def _google_flow(self, message: str) -> str:
+        import re
+        m = re.search(r'(?:search|for|look up)\s+(?:google\s+)?(?:for\s+)?(.+)', message.lower())
+        query = m.group(1).strip() if m else "news"
+        
+        result = self.registry.execute("browser_search", {"query": query, "engine": "google"})
+        return self._format_response(str(result))
     
     def _clean_snippet(self, snippet) -> str:
         """Remove error messages from browser output."""
