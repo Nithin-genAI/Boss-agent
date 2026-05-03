@@ -174,19 +174,41 @@ def get_joke() -> str:
 @tool
 def send_email(to: str, subject: str, body: str) -> str:
     """
-    Send an email (demo mode — shows what would be sent).
+    Send an email using your logged-in Gmail via Safari.
     Args:
         to: Email address
         subject: Email subject
         body: Email body
     """
-    return (
-        f"📧 [DEMO EMAIL]\n"
-        f"To: {to}\n"
-        f"Subject: {subject}\n"
-        f"Body: {body[:80]}...\n\n"
-        f"In production: connects to SendGrid/AWS SES"
-    )
+    import urllib.parse
+    import subprocess
+    
+    # URL encode the fields
+    safe_to = urllib.parse.quote(to)
+    safe_sub = urllib.parse.quote(subject)
+    safe_body = urllib.parse.quote(body)
+    
+    url = f"https://mail.google.com/mail/?view=cm&fs=1&to={safe_to}&su={safe_sub}&body={safe_body}"
+    
+    script = f'''
+tell application "Safari"
+    activate
+    make new document with properties {{URL:"{url}"}}
+    delay 6
+    tell application "System Events"
+        -- Press Cmd+Return to send
+        key code 36 using command down
+    end tell
+end tell
+'''
+    try:
+        result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=15)
+        if result.returncode == 0:
+            return f"📧 Email composed and sent to {to} via Safari Gmail."
+        else:
+            return f"❌ Failed to send email: {result.stderr}"
+    except Exception as e:
+        return f"❌ Email error: {str(e)}"
 
 
 @tool
