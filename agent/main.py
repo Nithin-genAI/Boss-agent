@@ -19,6 +19,13 @@ from tools.api_tools import (
 from tools.vision_tools import (
     analyze_image
 )
+from tools.github_tools import (
+    github_create_repo, github_get_repo, github_read_readme,
+    github_update_repo, github_list_repos,
+    github_create_issue, github_list_issues,
+    github_comment_on_issue, github_close_issue,
+    github_create_file, github_search_code
+)
 
 
 def interactive_mode():
@@ -38,7 +45,12 @@ def interactive_mode():
         browser_screenshot, browser_close, browser_get_url,
         get_weather, get_news, get_crypto_price, translate_text,
         get_joke, send_email, create_reminder, book_flight,
-        analyze_image
+        analyze_image,
+        github_create_repo, github_get_repo, github_read_readme,
+        github_update_repo, github_list_repos,
+        github_create_issue, github_list_issues,
+        github_comment_on_issue, github_close_issue,
+        github_create_file, github_search_code
     ])
 
     while True:

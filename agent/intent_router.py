@@ -86,7 +86,8 @@ class IntentRouter:
                 return {"intent": "SHELL_COMMAND", "confidence": 0.98, "raw": message}
         
         # ─── 2.5 COMPLEX ANALYSIS (requires LLM) ───
-        complex_triggers = ["screenshot", "summarize", "analyze", "analyse", "what is there", "what is on", "tell me what", "photo", "picture", "youtube", "chrome", "subscriptions", "gmail"]
+        complex_triggers = ["screenshot", "summarize", "analyze", "analyse", "what is there", "what is on", "tell me what", "photo", "picture", "youtube", "chrome", "subscriptions", "gmail",
+                            "github", "repo", "repository", "create repo", "update repo", "create issue", "read readme", "list repos", "list issues", "comment on", "close issue", "push to", "commit"]
         if any(c in msg_lower for c in complex_triggers):
             return {"intent": "GENERAL_CHAT", "confidence": 0.96, "raw": message}
             
