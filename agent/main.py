@@ -12,6 +12,13 @@ from tools.web_tools import (
     type_on_page, press_key, read_page_text,
     take_browser_screenshot, close_browser, get_current_url
 )
+from tools.api_tools import (
+    get_weather, get_news, get_crypto_price, translate_text,
+    get_joke, send_email, create_reminder, book_flight
+)
+from tools.vision_tools import (
+    analyze_image
+)
 
 
 def interactive_mode():
@@ -28,7 +35,10 @@ def interactive_mode():
         take_screenshot, open_application, open_folder,
         navigate_to_url, search_google, click_on_page,
         type_on_page, press_key, read_page_text,
-        take_browser_screenshot, close_browser, get_current_url
+        take_browser_screenshot, close_browser, get_current_url,
+        get_weather, get_news, get_crypto_price, translate_text,
+        get_joke, send_email, create_reminder, book_flight,
+        analyze_image
     ])
 
     while True:

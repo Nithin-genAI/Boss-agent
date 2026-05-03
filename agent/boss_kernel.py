@@ -336,22 +336,21 @@ class BossKernel:
     def _general_chat(self, user_message: str) -> str:
         self.short_term.add(HumanMessage(content=user_message))
         system_msg = SystemMessage(content=self._build_system_prompt())
-        messages = [system_msg] + self.short_term.get()
         
-        response = self.llm_with_tools.invoke(messages)
-        self.short_term.add(response)
-        
-        if response.tool_calls:
+        while True:
+            messages = [system_msg] + self.short_term.get()
+            response = self.llm_with_tools.invoke(messages)
+            self.short_term.add(response)
+            
+            if not response.tool_calls:
+                break
+                
             for tc in response.tool_calls:
                 result = self.registry.execute(tc["name"], tc["args"])
                 self.short_term.add(ToolMessage(content=str(result), tool_call_id=tc["id"]))
-            
-            final = self.llm_with_tools.invoke([system_msg] + self.short_term.get())
-            self.short_term.add(final)
-            return final.content if final.content else "Done."
         
         self._learn(user_message, response.content)
-        return response.content
+        return response.content if response.content else "Done."
     
     def _build_system_prompt(self) -> str:
         base = BOSS_SYSTEM_PROMPT

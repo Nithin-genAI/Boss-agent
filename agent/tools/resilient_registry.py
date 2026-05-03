@@ -55,8 +55,10 @@ class ResilientRegistry:
             self.circuit.record_success(tool_name)
             
             # Check if result is actually a failure
-            if isinstance(result, str) and any(fail in result.lower() for fail in ["error", "failed", "denied", "blocked", "not found"]):
-                raise Exception(result)
+            if isinstance(result, str):
+                lower_res = result.lower()
+                if lower_res.startswith("error:") or lower_res.startswith("failed:") or lower_res.startswith("gemini error:") or lower_res.startswith("openrouter error:"):
+                    raise Exception(result)
             
             print(f"   ✅ {tool_name} succeeded")
             return self.translator.translate_success(tool_name, result)
