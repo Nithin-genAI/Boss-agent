@@ -54,6 +54,7 @@ def interactive_mode():
     ])
 
     while True:
+        is_voice = False
         try:
             user_input = input("You: ").strip()
         except (EOFError, KeyboardInterrupt):
@@ -78,13 +79,39 @@ def interactive_mode():
             boss.registry.enable_mock_mode()
             print("Boss: Mock mode enabled.\n")
             continue
-        if not user_input:
+        if user_input.lower() in ["/v", "/voice"]:
+            try:
+                from voice import record_audio, transcribe_audio
+                filename = record_audio(duration=6)
+                user_input = transcribe_audio(filename)
+                if not user_input or user_input.startswith("DEEPGRAM"):
+                    print(f"Boss: {user_input or 'I couldn’t hear anything. Try again.'}\n")
+                    continue
+                print(f"You (Voice): {user_input}")
+                is_voice = True
+            except Exception as e:
+                print(f"Voice error: {e}\n")
+                continue
+        elif not user_input:
             continue
 
         print("   ⏳ Boss is thinking...")
         response = boss.think(user_input)
         print(f"Boss: {response}\n")
 
+        if is_voice:
+            try:
+                from voice import speak_text
+                speak_text(response)
+            except Exception as e:
+                print(f"TTS error: {e}\n")
+
 
 if __name__ == "__main__":
-    interactive_mode()
+    if "--gui" in sys.argv:
+        print("\n🚀 Starting Boss Web GUI on http://localhost:8000")
+        import uvicorn
+        from gui import app
+        uvicorn.run(app, host="0.0.0.0", port=8000, log_level="warning")
+    else:
+        interactive_mode()
