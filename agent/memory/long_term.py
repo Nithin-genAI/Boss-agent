@@ -15,7 +15,7 @@ except ImportError:
 class LongTermMemory:
     def __init__(self, user_id: str = "default_user"):
         self.user_id = user_id
-        self.mem0_api_key = "m0-jgxM4BqK37MS8Hp5jZGqNVzTGBvw8vchH3BP5ods"
+        self.mem0_api_key = "os.environ.get("MEM0_API_Key")"
         self.local_file = f"boss_memory_{user_id}.json"
         
         # Local fallback storage (always maintained as backup)
