@@ -30,7 +30,7 @@ from tools.github_tools import (
 
 def interactive_mode():
     print("\n" + "=" * 60)
-    print("  🤖 BOSS AGENT — PHASE 6: MULTI-AGENT ORCHESTRATOR")
+    print("  🤖 BOSS AGENT — PHASE 10: MULTI-AGENT")
     print("  Commands: exit | reset | status | undo | mock")
     print("=" * 60 + "\n")
 
